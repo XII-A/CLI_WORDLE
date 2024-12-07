@@ -1,9 +1,12 @@
+use colored::*;
 use rand::Rng;
 use serde_json::from_str;
 use std::io;
 
 fn main() {
-    println!("Welcome to Wordle CLI!");
+    let welcome_message = "Welcome to Wordle CLI!".on_blue().bold().underline();
+
+    println!("{welcome_message}");
 
     let word_list = std::fs::read_to_string("./src/words-list.json").unwrap();
 
@@ -19,9 +22,9 @@ fn main() {
 
     let rand_word = &word_list[rand_word_index];
 
-    println!("The random word is: {}", rand_word);
-
     loop {
+        let mut number_of_tries = 5;
+
         println!("Please input your guess:");
 
         let mut guess = String::new();
@@ -32,11 +35,46 @@ fn main() {
 
         let guess = guess.trim();
 
-        if guess == rand_word {
-            println!("You win!");
-            break;
-        } else {
-            println!("Try again!");
+        if guess.len() != 5 {
+            println!("Please enter a 5 letter word");
+            continue;
         }
+
+        for (i, character) in guess.chars().enumerate() {
+            if rand_word.contains(character) {
+                if rand_word.chars().nth(i).unwrap() == character {
+                    let formated_char = character.to_string().to_uppercase().on_green().bold();
+                    let formated_space = " ".on_green().bold();
+                    print!("{formated_space}{formated_char}{formated_space}");
+                } else {
+                    let formated_char = character.to_string().to_uppercase().on_yellow().bold();
+                    let formated_space = " ".on_yellow().bold();
+                    print!("{formated_space}{formated_char}{formated_space}");
+                }
+            } else {
+                let formated_char = character
+                    .to_string()
+                    .to_uppercase()
+                    .on_bright_black()
+                    .bold();
+                let formated_space = " ".on_bright_black().bold();
+                print!("{formated_space}{formated_char}{formated_space}");
+            }
+            print!(" ");
+        }
+
+        number_of_tries -= 1;
+
+        if guess == rand_word {
+            println!("\nYou won!");
+            break;
+        }
+
+        if number_of_tries == 0 {
+            println!("\nYou lost! The word was: {}", rand_word);
+            break;
+        }
+
+        println!();
     }
 }

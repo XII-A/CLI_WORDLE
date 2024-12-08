@@ -33,7 +33,7 @@ fn main() {
             .read_line(&mut guess)
             .expect("Failed to read line");
 
-        let guess = guess.trim();
+        let guess = guess.trim().to_lowercase();
 
         if guess.len() != 5 {
             println!("Please enter a 5 letter word");
@@ -65,7 +65,7 @@ fn main() {
 
         number_of_tries -= 1;
 
-        if guess == rand_word {
+        if guess == *rand_word {
             println!("\nYou won!");
             break;
         }
